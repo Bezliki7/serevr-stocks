@@ -7,8 +7,44 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model stocks {
+enum PeriodTypeEnum {
+  SHORT @map("short")
+  MID   @map("mid")
+  LONG  @map("long")
+
+  @@map("period_type_enum")
+}
+
+model Stocks {
   id    Int      @id @default(autoincrement())
-  index String
-  date  DateTime
+  name  String   @db.VarChar(255)
+  index String   @db.VarChar(255)
+  date  DateTime @db.Date
+
+  @@map("stocks")
+}
+
+model Prediction {
+  id                Int       @id @default(autoincrement())
+  portfolioId       Int       @db.Integer
+  portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+  stockName         String    @map("stock_name") @db.VarChar(255)
+  meanAbsoluteError Float     @map("mean_absolute_error") @db.DoublePrecision
+  profit            Float     @db.DoublePrecision
+
+  @@unique([portfolioId, stockName])
+  @@map("prediction")
+}
+
+model Portfolio {
+  id             Int            @id @default(autoincrement())
+  name           String         @db.VarChar(255)
+  isMoreRisk     Boolean        @map("is_more_risk")
+  periodType     PeriodTypeEnum @default(SHORT) @map("period_type")
+  dateOfCreation DateTime       @map("date_of_creation") @db.Date()
+  startDate      DateTime       @map("start_date") @db.Date()
+  endDate        DateTime       @map("end_date") @db.Date()
+  predictions    Prediction[]
+
+  @@map("portfolio")
 }
