@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Portfolio, PrismaClient } from '@prisma/client';
 import * as fs from 'fs-extra';
-import { compareAsc, parse } from 'date-fns';
+import { compareAsc } from 'date-fns';
 
 import type { Response } from 'express';
 
 import { CONVERT_PERIOD_TYPE } from './prediction.constant';
 
-import type { CreatePortfolioDto } from '../dtos/create-portfolio.dto';
-import type { UpdatePortfolio } from '../dtos/update-portfolio.dto';
+import type { CreatePortfolioDto } from '../../dtos/create-portfolio.dto';
+import type { UpdatePortfolio } from '../../dtos/update-portfolio.dto';
 
 @Injectable()
 export class PredictionService {
@@ -66,6 +66,7 @@ export class PredictionService {
           ...dto,
           periodType: CONVERT_PERIOD_TYPE.TO_BD[dto.periodType],
           predictions: {
+            deleteMany: {},
             createMany: {
               data: dto.predictions,
             },
@@ -99,17 +100,7 @@ export class PredictionService {
     };
   }
 
-  public async initialize() {
-    const files = await fs.readdir(`assets/dataset/`);
-
-    files.map((file) => {
-      this.saveDataset(file);
-    });
-  }
-
   public async getMoexIndexesByPeriod(startDate: Date, endDate: Date) {
-    const s = await this.db.stocks.findMany();
-
     const data = await this.db.stocks.findMany({
       where: { date: { gte: startDate, lte: endDate }, name: 'IMOEX' },
     });
@@ -127,38 +118,7 @@ export class PredictionService {
       },
     });
 
-    return stocks
-      .filter(({ index }) => index.length > 1 && !index.startsWith('0'))
-      .sort((a, b) => compareAsc(a.date, b.date));
-  }
-
-  private async saveDataset(filePath: string): Promise<void> {
-    try {
-      const data = await fs.readFile(`assets/dataset/${filePath}`, 'utf8');
-      const lines = data.split('\n');
-
-      for (let i = 3; i < lines.length; i++) {
-        if (!lines[i]) return;
-
-        const arrOfData = lines[i].split(',');
-        const name = arrOfData[0];
-        const index = arrOfData[4];
-        const formatedIndex =
-          index !== 'null' ? index : lines[i - 1].split(',')[4];
-        const formatedYear = arrOfData[2].split('/')[2].padStart(4, '20');
-        const formatedDate = arrOfData[2].slice(0, 6) + formatedYear;
-        const isoDateString = parse(formatedDate, 'dd/MM/yyyy', 0);
-        await this.db.stocks.create({
-          data: {
-            name,
-            date: isoDateString,
-            index: formatedIndex,
-          },
-        });
-      }
-    } catch (error) {
-      console.error('Error importing data:', error);
-    }
+    return stocks.sort((a, b) => compareAsc(a.date, b.date));
   }
 
   public async getModel() {

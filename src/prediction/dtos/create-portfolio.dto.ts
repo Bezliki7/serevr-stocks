@@ -1,3 +1,3 @@
-import { Prediction } from '../services/prediction.interface';
+import { Prediction } from '../services/prediction/prediction.interface';
 
 export type CreatePortfolioDto = Prediction;

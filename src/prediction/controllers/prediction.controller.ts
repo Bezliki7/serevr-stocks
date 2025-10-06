@@ -13,7 +13,7 @@ import {
 
 import type { Response } from 'express';
 
-import { PredictionService } from '../services/prediction.service';
+import { PredictionService } from '../services/prediction/prediction.service';
 
 import type { CreatePortfolioDto } from '../dtos/create-portfolio.dto';
 import type { UpdatePortfolio } from '../dtos/update-portfolio.dto';
@@ -44,11 +44,6 @@ export class PredictionController {
   @Delete('portfolio/:id')
   public deletePortfolio(@Param('id', ParseIntPipe) id: number) {
     this.predictionService.deletePortfolio(id);
-  }
-
-  @Get('init')
-  public init() {
-    this.predictionService.initialize();
   }
 
   @Put('moexes')
