@@ -26,7 +26,7 @@ CREATE TABLE "prediction" (
 CREATE TABLE "portfolio" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
-    "is_more_risk" BOOLEAN NOT NULL,
+    "is_more_risk" BOOLEAN NOT NULL DEFAULT false,
     "period_type" "period_type_enum" NOT NULL DEFAULT 'short',
     "date_of_creation" DATE NOT NULL,
     "start_date" DATE NOT NULL,
