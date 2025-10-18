@@ -36,6 +36,9 @@ CREATE TABLE "portfolio" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "stocks_name_date_key" ON "stocks"("name", "date");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "prediction_portfolioId_stock_name_key" ON "prediction"("portfolioId", "stock_name");
 
 -- AddForeignKey

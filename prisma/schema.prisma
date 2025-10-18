@@ -21,6 +21,7 @@ model Stocks {
   index String   @db.VarChar(255)
   date  DateTime @db.Date
 
+  @@unique([name, date])
   @@map("stocks")
 }
 

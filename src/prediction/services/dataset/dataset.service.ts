@@ -6,6 +6,9 @@ import { createHash } from 'crypto';
 
 import { DATASET_DIR, FILE_ENCODING, HASH } from './dataset.constant';
 
+/**
+ * Сервис для инициализации датасета
+ */
 @Injectable()
 export class DatasetService implements OnModuleInit {
   private dataByFile: Record<string, string> = {};
@@ -72,11 +75,23 @@ export class DatasetService implements OnModuleInit {
         const formatedYear = arrOfData[2].split('/')[2].padStart(4, '20');
         const formatedDate = arrOfData[2].slice(0, 6) + formatedYear;
         const isoDateString = parse(formatedDate, 'dd/MM/yyyy', 0);
-        await this.db.stocks.create({
-          data: {
+
+        await this.db.stocks.upsert({
+          create: {
             name,
             date: isoDateString,
             index: formatedIndex,
+          },
+          update: {
+            name,
+            date: isoDateString,
+            index: formatedIndex,
+          },
+          where: {
+            name_date: {
+              name,
+              date: isoDateString,
+            },
           },
         });
       }
