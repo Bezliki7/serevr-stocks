@@ -1,9 +1,8 @@
-version: '3.9'
+name: stocks-server
 
 services:
-  stocks-server:
+  postgres:
     image: postgres:latest
-    container_name: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -16,3 +15,5 @@ services:
 
 volumes:
   pgdata:
+    name: stocks-postgres-data
+    external: true
