@@ -64,14 +64,20 @@ export class DatasetService implements OnModuleInit {
       const data = this.dataByFile[filePath];
       const lines = data.split('\n');
 
+      let prevSavedPrice = '';
+
       for (let i = 3; i < lines.length; i++) {
         if (!lines[i]) return;
-
         const arrOfData = lines[i].split(',');
+
         const name = arrOfData[0];
-        const index = arrOfData[4];
-        const formatedIndex =
-          index !== 'null' ? index : lines[i - 1].split(',')[4];
+
+        const price = arrOfData[4];
+        if (price) {
+          prevSavedPrice = price;
+        }
+        const formatedPrice = price ?? prevSavedPrice;
+
         const formatedYear = arrOfData[2].split('/')[2].padStart(4, '20');
         const formatedDate = arrOfData[2].slice(0, 6) + formatedYear;
         const isoDateString = parse(formatedDate, 'dd/MM/yyyy', 0);
@@ -80,12 +86,12 @@ export class DatasetService implements OnModuleInit {
           create: {
             name,
             date: isoDateString,
-            index: formatedIndex,
+            index: formatedPrice,
           },
           update: {
             name,
             date: isoDateString,
-            index: formatedIndex,
+            index: formatedPrice,
           },
           where: {
             name_date: {

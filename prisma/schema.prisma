@@ -15,36 +15,53 @@ enum PeriodTypeEnum {
   @@map("period_type_enum")
 }
 
+// Модель для хранения информации о стоимости акций в определённый день
 model Stocks {
   id    Int      @id @default(autoincrement())
+  // Название компании, выпустившей акции
   name  String   @db.VarChar(255)
+  // Стоимость акции в указанный день
   index String   @db.VarChar(255)
+  // Дата, к которой относится значение стоимости акции.
   date  DateTime @db.Date
 
   @@unique([name, date])
   @@map("stocks")
 }
 
+// Модель для хранения прогнозов по акциям, связанных с определённым портфелем
 model Prediction {
   id                Int       @id @default(autoincrement())
+  // Внешний ключ, ссылающийся на идентификатор портфеля
   portfolioId       Int       @db.Integer
   portfolio         Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  // Название акции, для которой сделан прогноз
   stockName         String    @map("stock_name") @db.VarChar(255)
+  // Средняя абсолютная ошибка модели прогноза для данной акции в этом портфеле (метрика точности)
   meanAbsoluteError Float     @map("mean_absolute_error") @db.DoublePrecision
+  // Прогнозируемая прибыль от акции в рамках этого портфеля
   profit            Float     @db.DoublePrecision
 
   @@unique([portfolioId, stockName])
   @@map("prediction")
 }
 
+// Модель для описания инвестиционного портфеля
 model Portfolio {
   id             Int            @id @default(autoincrement())
+  // Название портфеля
   name           String         @db.VarChar(255)
+  // Флаг, указывающий, является ли портфель более рискованным
   isMoreRisk     Boolean        @default(false) @map("is_more_risk")
+  // Тип периода инвестирования
   periodType     PeriodTypeEnum @default(SHORT) @map("period_type")
+  // Дата создания портфеля
   dateOfCreation DateTime       @map("date_of_creation") @db.Date()
+  // Начальная дата инвестиционного периода
   startDate      DateTime       @map("start_date") @db.Date()
+  // Конечная дата инвестиционного периода
   endDate        DateTime       @map("end_date") @db.Date()
+  // Список прогнозов, связанных с этим портфелем
   predictions    Prediction[]
 
   @@map("portfolio")

@@ -23,16 +23,25 @@ import type { GetMoexIndexesDto } from '../dtos/get-moex-indexes.dto';
 export class PredictionController {
   constructor(private readonly predictionService: PredictionService) {}
 
+  /**
+   * Создание инвестиционного портфеля
+   */
   @Post('portfolio')
   public createPortfolio(@Body() dto: CreatePortfolioDto) {
     return this.predictionService.createPortfolio(dto);
   }
 
+  /**
+   * Получение списка инвестиционных портфелей
+   */
   @Get('portfolios')
-  public getPOrtfolios() {
+  public getPortfolios() {
     return this.predictionService.getPortfolios();
   }
 
+  /**
+   * Обновление инвестиционного портфеля
+   */
   @Patch('portfolio/:id')
   public updatePortfolio(
     @Param('id', ParseIntPipe) id: number,
@@ -41,11 +50,17 @@ export class PredictionController {
     return this.predictionService.updatePortfolio(id, dto);
   }
 
+  /**
+   * Удаление инвестиционного портфеля
+   */
   @Delete('portfolio/:id')
   public deletePortfolio(@Param('id', ParseIntPipe) id: number) {
     this.predictionService.deletePortfolio(id);
   }
 
+  /**
+   * Получение индекса МосБиржи за определенный период
+   */
   @Put('moexes')
   public async getMoexIndexesByPeriod(
     @Body() getMoexIndexesDto: GetMoexIndexesDto,
@@ -59,16 +74,25 @@ export class PredictionController {
     );
   }
 
+  /**
+   * Получение всех акций
+   */
   @Get('stocks')
   public getStocks() {
     return this.predictionService.getStocks();
   }
 
+  /**
+   * Получение модели для предсказания
+   */
   @Get('model')
   public getModel() {
     return this.predictionService.getModel();
   }
 
+  /**
+   * Получение бинарного файла весов модели
+   */
   @Get('model.weights.bin')
   async getBin(@Res() res: Response) {
     return this.predictionService.getModelBin(res);
